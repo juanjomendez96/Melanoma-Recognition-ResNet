@@ -13,6 +13,7 @@ from ResNet import ResNet
 from PrepareTrainTest import PrepareTrainTest
 from PrepareData import PrepareData
 from AuxFunctions import AuxFunctions
+from UNet import UNet
 
 # Python libraries
 from keras.utils import plot_model
@@ -71,8 +72,22 @@ benign_equalized = PrepareData.equalizeImages(benign_images)
 """
 
 """
-    Prepare train-test data section
+    Section of UNet model
 """
+model = UNet.buildModel()
+model.summary()
+UNet.train_model(model, X_train, y_train, X_val, y_val)
+score = UNet.evaluate_model(model, X_test, y_test)
+print("Test loss-> ", score[0])
+print("Test accuracy-> ", score[1])
+predicted = UNet.predict_model(X_test)
+print(predicted)
+
+
+
+"""
+    Prepare train-test data section
+
 
 if is_equalized == 0:
     name_file = "train-test-val.hdf5"
@@ -85,10 +100,10 @@ else:
 X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
     path_datasets, name_file
 )
-
+"""
 """
     ResNet model section
-"""
+
 model = ResNet.buildModel(lr, opt)
 
 if opt == 0:
@@ -132,3 +147,4 @@ ResNet.evaluateModel(model, X_test, y_test)
 AuxFunctions.create_confusion_matrix(model, X_test, y_test)
 AuxFunctions.create_plots_train_test(history)
 AuxFunctions.saveWeights(model, "logs/")
+"""
