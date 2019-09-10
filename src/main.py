@@ -59,32 +59,6 @@ opt = args.optimizer
 patience = args.patience
 is_equalized = args.file
 
-""" 
-    Section to get all images before training
-
-# Create dataset.hf5py
-PrepareData.createH5PY(path_images, path_datasets)
-# Get images from dataset
-
-malignant_images, benign_images = PrepareData.readDataH5PY(path_datasets)
-malignant_equalized = PrepareData.equalizeImages(malignant_images)
-benign_equalized = PrepareData.equalizeImages(benign_images)
-"""
-
-"""
-    Section of UNet model
-"""
-model = UNet.buildModel()
-model.summary()
-UNet.train_model(model, X_train, y_train, X_val, y_val)
-score = UNet.evaluate_model(model, X_test, y_test)
-print("Test loss-> ", score[0])
-print("Test accuracy-> ", score[1])
-predicted = UNet.predict_model(X_test)
-print(predicted)
-
-
-
 """
     Prepare train-test data section
 
@@ -101,6 +75,7 @@ X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
     path_datasets, name_file
 )
 """
+
 """
     ResNet model section
 
