@@ -78,7 +78,7 @@ X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
 
 """
     ResNet model section
-
+"""
 model = ResNet.buildModel(lr, opt)
 
 if opt == 0:
@@ -122,4 +122,3 @@ ResNet.evaluateModel(model, X_test, y_test)
 AuxFunctions.create_confusion_matrix(model, X_test, y_test)
 AuxFunctions.create_plots_train_test(history)
 AuxFunctions.saveWeights(model, "logs/")
-"""
