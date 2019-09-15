@@ -30,7 +30,7 @@ parser.add_argument("--epochs", "-e", type=int, help="Number of epochs.")
 parser.add_argument("--learningrate", "-lr", type=float, help="Value of learning rate.")
 parser.add_argument("--batch", "-b", type=int, help="Numbers of batch.", default=10)
 parser.add_argument("--datasets", "-d", type=str, help="Path for h5py files.")
-parser.add_argument("--traintest", "-r", type=str, help="Name of the train test validation hdf5 file.")
+parser.add_argument("--traintest", "-tt", type=str, help="Name of the train test validation hdf5 file.")
 parser.add_argument(
     "--optimizer",
     "-o",
@@ -50,22 +50,22 @@ epochs = args.epochs
 lr = args.learningrate
 batch_size = args.batch
 path_datasets = args.datasets
-file_name = args.images
+file_name = args.traintest
 opt = args.optimizer
 patience = args.patience
 
 
 #  Prepare train-test data section
-"""
+
 if os.path.exists(file_name):
-    # PrepareTrainTest.createTrainTestH5PY(path_datasets, name_file, malignant_equalized, benign_equalized)
+    # PrepareTrainTest.createTrainTestH5PY(path_datasets, file_name, malignant_equalized, benign_equalized)
     X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
-        path_datasets, file_name
+        path_datasets, "train-test-val.hdf5"
     )
 else:
     print("Error! H5PY file does not exists...")
     sys.exit(-1)
-"""
+
 
 
 # Start the section where the model is built
