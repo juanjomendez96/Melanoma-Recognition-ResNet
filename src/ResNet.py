@@ -25,18 +25,34 @@ from keras import losses
 
 from AuxFunctions import AuxFunctions
 
+"""
+    Name: ResNet
+    
+    Description: This class has been created in order to create, train and evaluate the model of the ResNet.
+"""
 
 class ResNet:
     """
-        Method that trains the model and returns its history in order to create a figure with the results of the training
+        Name: trainModel
+
+        Inputs: - model: Keras model that creates the residual network.
+                - X_train: Array that keeps the input data for the training.
+                - y_train: Array that keeps the label of the input data for the training.
+                - X_val: Array that keeps the data of the validation for the training.
+                - y_val: Array that keeps the labels of the validation for the training.
+                - epochs: Integer that says how many epoch has to be trained the model.
+                - batch_size: Integer that keeps the size of the batch for the training.
+                - callbacks: Array that keeps the information for the early stopping and tensorboard's graphics.
+
+        Returns: - history: Array that keeps the model information after being trained.
+
+        Description: This function train the already compiled model and return the results of the training.
     """
 
-    def train_model(
+    def trainModel(
         model,
         X_train,
         y_train,
-        X_test,
-        y_test,
         X_val,
         y_val,
         epochs,
@@ -54,7 +70,15 @@ class ResNet:
         return history
 
     """
-        Method that evaluates the model with the test data
+        Name: evaluateModel
+
+        Inputs: - model: Model of the residual network.
+                - X_test: Array with the images of the test.
+                - y_test: Array with label of the test.
+
+        Returns: None.
+
+        Description: This function has been created in order to evaluate the already trained model.
     """
 
     def evaluateModel(model, X_test, y_test):
@@ -70,7 +94,14 @@ class ResNet:
         print("-" * 40)
 
     """
-        Function that build and compile the full model with the convolutional and identity blocks
+        Name: buildModel
+
+        Inputs: - lr: Learning rate value in order to build the model.
+                - opt: Type of optimazer in order to build the model.
+
+        Returns: - model: Model already built.
+
+        Description: This function has been created in order to build the residual network model. It returns the model to use it in other functions.
     """
 
     def buildModel(lr, opt):

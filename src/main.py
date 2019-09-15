@@ -104,8 +104,8 @@ callbacks = [
     ),
 ]
 
-history = ResNet.train_model(
-    model, X_train, y_train, X_test, y_test, X_val, y_val, epochs, batch_size, callbacks
+history = ResNet.trainModel(
+    model, X_train, y_train, X_val, y_val, epochs, batch_size, callbacks
 )
 
 print("-" * 40)

@@ -4,20 +4,37 @@
     File: AuxFunctions.py
     Program: File that contains the additional functions to make the network works
 """
+
 import tensorflow as ts
 import numpy as np
 import seaborn as sns
-from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 import keras
+
+from sklearn.metrics import confusion_matrix
 from keras.layers import Activation, Flatten, Conv2D, BatchNormalization
 from keras import layers
 
+"""
+    Name: AuxFunction
+    
+    Description: This class has been created in order to keep the additional functions needed to create, train and evaluate the ResNet model.
+"""
 
 class AuxFunctions:
     """
-        Method that is used in order to build the ResNet model
+        Name: trainModel
+
+        Inputs: - X: Keras model that creates the residual network.
+                - f: Array that keeps the input data for the training.
+                - filters: Array that keeps the label of the input data for the training.
+                - stage: Array that keeps the data of the validation for the training.
+                - block: Array that keeps the labels of the validation for the training.
+
+        Returns: - X: Array that keeps the model information after being trained.
+
+        Description: This function train the already compiled model and return the results of the training.
     """
 
     def identity_block(X, f, filters, stage, block):

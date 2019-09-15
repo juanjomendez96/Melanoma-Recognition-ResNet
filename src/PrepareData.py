@@ -9,14 +9,24 @@ import h5py
 import os
 import json
 
-# import cv2
-from tqdm import tqdm
-from keras.preprocessing import image
+from tqdm import tqdm # This library is used to know the percentage of images already classified and saved
 
+"""
+    Name: PrepareData
+    
+    Description: This class has been created in order to classify the images before the training.
+"""
 
 class PrepareData:
     """
-        Method that creates an hdf5 file in order to keep classified the images
+        Name: createH5PY
+
+        Inputs: - path_images: Path of the images.
+                - path_datasets: Path where it is going to save the images.
+
+        Returns: None.
+
+        Description: This function classifies the images into malignant and benign. After that, creates a hdf5 file in order to save them.
     """
 
     def createH5PY(path_images, path_datasets):
@@ -54,7 +64,14 @@ class PrepareData:
                                 )
 
     """
-        Method that reads all the images and returns them in order to start the train test split process
+        Name: readDataH5PY
+
+        Inputs: - path: Path of the hdf5 file.
+
+        Returns: - malignant_images: An array with all the malignant images.
+                 - benign_images: An array with the benign images.
+        
+        Description: This function reads the hdf5 file and returns two array with the different types of images.
     """
 
     def readDataH5PY(path):

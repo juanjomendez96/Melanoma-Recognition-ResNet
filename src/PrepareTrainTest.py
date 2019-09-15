@@ -4,16 +4,31 @@
     File: PrepareTrainTest.py
     Program: File that creates the train test file in order to train the model with
 """
+
 import h5py
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 import numpy as np
 from keras.utils import np_utils
 
+"""
+    Name: PrepareTrainTest
+    
+    Description: This class has been created in order split the input data into train, test and validation for the training.
+"""
 
 class PrepareTrainTest:
     """
-        Method that creates the train test hdf5 file
+        Name: createTrainTestH5PY
+
+        Inputs: - path: Path of the hdf5 file.
+                - name_file: String for the name of the hdf5 file that keeps the train, test and validation data.
+                - malignant_images: Array with the malignant images.
+                - benign_images: Array with the benign images.
+
+        Returns: None.
+
+        Description: This function splits the recieved data into train, test and validation. At the end, it saves the data into a hdf5 file.
     """
 
     def createTrainTestH5PY(path, name_file, malignant_images, benign_images):
@@ -52,7 +67,14 @@ class PrepareTrainTest:
             hdf.create_dataset("y_val", data=y_val, compression="gzip")
 
     """
-        Method that reads the train test hdf5 file
+        Name: readDataH5PY
+
+        Inputs: - path: Path of the hdf5 file.
+                - name_file: String for the name of the hdf5 file that keeps the train, test and validation data.
+
+        Returns: - dataset: A dictionary that keeps the value of the train, test and validation data.
+
+        Description: This function reads the data for the training from a hdf5 file and returns a dictionary that keeps them.
     """
 
     def readDataH5PY(path, name_file):
