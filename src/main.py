@@ -57,7 +57,7 @@ patience = args.patience
 
 #  Prepare train-test data section
 
-if os.path.exists(file_name):
+if os.path.isdir(path_datasets):
     # PrepareTrainTest.createTrainTestH5PY(path_datasets, file_name, malignant_equalized, benign_equalized)
     X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
         path_datasets, file_name
