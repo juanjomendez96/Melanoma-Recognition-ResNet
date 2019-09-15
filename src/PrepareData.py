@@ -81,21 +81,3 @@ class PrepareData:
                 benign_images.append(np.array(hdf.get("benign_images").get(items[0])))
 
         return malignant_images, benign_images
-
-    """
-        This method equalizes the images in order to get a better results in training process
-
-    def equalizeImages(images):
-        print("-"*40)
-        print("Equalizing images...")
-        print("-"*40)
-
-        result = []
-        for image in tqdm(images):
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-            image = cv2.equalizeHist(cv2.dilate(image, np.ones((5,5), np.uint8), iterations = 2))
-            image = cv2.erode(image,  np.ones((5,5), np.uint8), iterations= 2)
-            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
-            result.append(image)
-        return result
-    """
