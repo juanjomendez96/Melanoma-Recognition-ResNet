@@ -60,7 +60,7 @@ patience = args.patience
 if os.path.exists(file_name):
     # PrepareTrainTest.createTrainTestH5PY(path_datasets, file_name, malignant_equalized, benign_equalized)
     X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
-        path_datasets, "train-test-val.hdf5"
+        path_datasets, file_name
     )
 else:
     print("Error! H5PY file does not exists...")
