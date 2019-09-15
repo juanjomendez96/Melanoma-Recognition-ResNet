@@ -6,7 +6,16 @@
 """
 import os
 
+# This is to select the graphic card to use
 os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
+
+# Python libraries
+import matplotlib.pyplot as plt
+import numpy as np
+import argparse
+import sys
+from keras.callbacks import TensorBoard, EarlyStopping
+from keras.utils import plot_model
 
 # Additional libraries
 from ResNet import ResNet
@@ -15,23 +24,13 @@ from PrepareData import PrepareData
 from AuxFunctions import AuxFunctions
 from UNet import UNet
 
-# Python libraries
-from keras.utils import plot_model
-import matplotlib.pyplot as plt
-import numpy as np
-import argparse
-from keras.callbacks import TensorBoard, EarlyStopping
-import sys
-
-"""
-    Section for input params
-"""
+# Needed inputs in order to run the network
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", "-e", type=int, help="Number of epochs.")
 parser.add_argument("--learningrate", "-lr", type=float, help="Value of learning rate.")
 parser.add_argument("--batch", "-b", type=int, help="Numbers of batch.", default=10)
 parser.add_argument("--datasets", "-d", type=str, help="Path for h5py files.")
-parser.add_argument("--images", "-i", type=str, help="Path lesion images.")
+parser.add_argument("--traintest", "-r", type=str, help="Name of the train test validation hdf5 file.")
 parser.add_argument(
     "--optimizer",
     "-o",
@@ -45,40 +44,31 @@ parser.add_argument(
     type=int,
     help="Number of epochs without improving validation loss.",
 )
-parser.add_argument(
-    "--file", "-f", type=int, help="Images to train with. 0. No equalized 1. Equalized"
-)
 args = parser.parse_args()
 
 epochs = args.epochs
 lr = args.learningrate
 batch_size = args.batch
 path_datasets = args.datasets
-path_images = args.images
+file_name = args.images
 opt = args.optimizer
 patience = args.patience
-is_equalized = args.file
 
+
+#  Prepare train-test data section
 """
-    Prepare train-test data section
-
-
-if is_equalized == 0:
-    name_file = "train-test-val.hdf5"
-elif is_equalized == 1:
-    name_file = "train-test-val-equalized.hdf5"
+if os.path.exists(file_name):
+    # PrepareTrainTest.createTrainTestH5PY(path_datasets, name_file, malignant_equalized, benign_equalized)
+    X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
+        path_datasets, file_name
+    )
 else:
     print("Error! H5PY file does not exists...")
     sys.exit(-1)
-# PrepareTrainTest.createTrainTestH5PY(path_datasets, name_file, malignant_equalized, benign_equalized)
-X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
-    path_datasets, name_file
-)
 """
 
-"""
-    ResNet model section
-"""
+
+# Start the section where the model is built
 model = ResNet.buildModel(lr, opt)
 
 if opt == 0:
@@ -88,6 +78,7 @@ elif opt == 1:
 elif opt == 2:
     type_opt = "SGD"
 
+# Creation of the model's callbacks Tensorboard to create the graphs with the results and EarlyStopping to stop the training when it is not improving
 callbacks = [
     TensorBoard(
         log_dir="./logs/" + type_opt + "_b" + str(batch_size) + "/",

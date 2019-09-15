@@ -24,20 +24,19 @@ from keras import layers
 
 class AuxFunctions:
     """
-        Name: trainModel
+        Name: identityBlock
 
-        Inputs: - X: Keras model that creates the residual network.
-                - f: Array that keeps the input data for the training.
-                - filters: Array that keeps the label of the input data for the training.
-                - stage: Array that keeps the data of the validation for the training.
-                - block: Array that keeps the labels of the validation for the training.
+        Inputs: - X: Layers of the model.
+                - f: Size of the convolutional layer's kernel.
+                - filters: Array with the filter's size of the convolotional layers.
+                - block: String that represents the name of the block.
 
-        Returns: - X: Array that keeps the model information after being trained.
+        Returns: - X: Layer of the model.
 
-        Description: This function train the already compiled model and return the results of the training.
+        Description: This function has been created in order to create an identity block that creates a shortcut that skips one or more layers.
     """
 
-    def identity_block(X, f, filters, stage, block):
+    def identityBlock(X, f, filters, block):
         # Retrieve filters
         F1, F2, F3 = filters
 
@@ -65,10 +64,20 @@ class AuxFunctions:
         return X
 
     """
-        Method that is used in order to build the ResNet model
+        Name: convolutionalBlock
+
+        Inputs: - X: Layers of the model.
+                - f: Size of the convolutional layer's kernel.
+                - filters: Array with the filter's size of the convolotional layers.
+                - block: String that represents the name of the block.
+                - stride: Stride of the layer that combines the main path with the shortcuts.
+
+        Returns: - X: Layer of the model.
+
+        Description: This function has has been created in order to combine the main path of the model with the shortcuts.
     """
 
-    def convolutional_block(X, f, filters, stage, block, s=2):
+    def convolutionalBlock(X, f, filters, block, s=2):
         F1, F2, F3 = filters
 
         # Create the shortcut
@@ -99,7 +108,15 @@ class AuxFunctions:
         return X
 
     """
-        Method that creates the confusion matrix and save it into a PNG image
+        Name: create_confusion_matrix
+
+        Inputs: - model: ResNet model already trained and compiled.
+                - X_test: Array that keeps the test data of the model.
+                - y_test: Array that keeps the test labels of the model.
+
+        Returns: None.
+
+        Description: This function has been created in order to show the confusion matrix of the model. Here we have used an additional library in order to get a confusion matrix image.
     """
 
     def create_confusion_matrix(model, X_test, y_test):
@@ -125,7 +142,13 @@ class AuxFunctions:
         plt.savefig("confusion_matrix.png")
 
     """
-        Method that creates a summary of the training process loss
+        Name: create_plots_train_test
+
+        Inputs: - history: Information about the trained model.
+
+        Returns: None.
+
+        Description: This function creates a graphics with the train and validation losses. It creates an image with that values.
     """
 
     def create_plots_train_test(history):
@@ -137,11 +160,18 @@ class AuxFunctions:
         plt.plot(history.history["val_loss"], label="test")
         plt.xlabel("Train epochs")
         plt.ylabel("Error")
-        plt.legend(["train", "test"], loc="lower left")
-        plt.savefig("train-test.png")
+        plt.legend(["train", "validation"], loc="lower left")
+        plt.savefig("train-validation.png")
 
     """
-        Method that saves the weights of the model
+        Name: saveWeights
+
+        Inputs: - model: ResNet model.
+                - path: Path where to keep the weights of the trained model.
+
+        Returns: None.
+
+        Description: The aim of this function is to save the weights of the model after the training has been completed. 
     """
 
     def saveWeights(model, path):

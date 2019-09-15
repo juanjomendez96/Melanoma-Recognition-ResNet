@@ -120,18 +120,18 @@ class ResNet:
         X = Activation("relu")(X)
         X = MaxPooling2D((3, 3), strides=(2, 2))(X)
 
-        X = AuxFunctions.convolutional_block(
-            X, f=3, filters=[64, 64, 256], stage=2, block="a", s=1
+        X = AuxFunctions.convolutionalBlock(
+            X, f=3, filters=[64, 64, 256], block="a", s=1
         )
-        X = AuxFunctions.identity_block(X, 3, [64, 64, 256], stage=2, block="b")
-        X = AuxFunctions.identity_block(X, 3, [64, 64, 256], stage=2, block="c")
+        X = AuxFunctions.identityBlock(X, 3, [64, 64, 256], block="b")
+        X = AuxFunctions.identityBlock(X, 3, [64, 64, 256], block="c")
 
-        X = AuxFunctions.convolutional_block(
-            X, f=3, filters=[128, 128, 512], stage=2, block="a", s=1
+        X = AuxFunctions.convolutionalBlock(
+            X, f=3, filters=[128, 128, 512], block="a", s=1
         )
-        X = AuxFunctions.identity_block(X, 3, [128, 128, 512], stage=3, block="b")
-        X = AuxFunctions.identity_block(X, 3, [128, 128, 512], stage=3, block="c")
-        X = AuxFunctions.identity_block(X, 3, [128, 128, 512], stage=3, block="d")
+        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="b")
+        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="c")
+        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="d")
 
         X = AveragePooling2D((2, 2))(X)
 
