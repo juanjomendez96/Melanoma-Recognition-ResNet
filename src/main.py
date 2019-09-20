@@ -70,7 +70,7 @@ elif batch_size <= 0:
     print("Error! Batch size must be greater than 0")
     print("Please, run main.py -h to see the options")
     sys.exit(-1)
-elif opt != 0 or opt != 1 or opt != 2:
+elif opt != 0 and opt != 1 and opt != 2:
     print("Error! The optimizer must be 0, 1 or 2")
     print("Please, run main.py -h to see the options")
     sys.exit(-1)
