@@ -96,7 +96,7 @@ callbacks = [
 ]
 
 history = rn.trainModel(
-    model, X_train, y_train, X_val, y_val, epochs, batch_size, callbacks
+    model, X_train, y_train, X_val, y_val, callbacks
 )
 
 print("-" * 40)
@@ -108,7 +108,7 @@ print("\t batch size -> ", batch_size)
 print("\t patience -> ", patience)
 print("-" * 40)
 
-ResNet.evaluateModel(model, X_test, y_test)
+rn.evaluateModel(model, X_test, y_test)
 
 AuxFunctions.create_confusion_matrix(model, X_test, y_test)
 AuxFunctions.create_plots_train_test(history)
