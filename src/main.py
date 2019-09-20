@@ -131,7 +131,7 @@ print("-" * 40)
 
 rn.evaluateModel(model, X_test, y_test)
 
-if os.path.isdir("results/"):
+if os.path.exists("./results/") == False:
     print("Creating results directory...")
     os.mkdir("./results/")
 
