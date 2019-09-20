@@ -67,9 +67,9 @@ else:
     sys.exit(-1)
 
 
-ResNet(lr, opt, batch_size, epochs)
+rn = ResNet(lr, opt, batch_size, epochs)
 # Start the section where the model is built
-model = ResNet.buildModel()
+model = rn.buildModel()
 
 if opt == 0:
     type_opt = "Adam"
@@ -95,7 +95,7 @@ callbacks = [
     ),
 ]
 
-history = ResNet.trainModel(
+history = rn.trainModel(
     model, X_train, y_train, X_val, y_val, epochs, batch_size, callbacks
 )
 
