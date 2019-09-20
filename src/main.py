@@ -20,17 +20,25 @@ from keras.utils import plot_model
 # Additional libraries
 from ResNet import ResNet
 from PrepareTrainTest import PrepareTrainTest
-from PrepareData import PrepareData
 from AuxFunctions import AuxFunctions
-from UNet import UNet
 
 # Needed inputs in order to run the network
 parser = argparse.ArgumentParser()
 parser.add_argument("--epochs", "-e", type=int, help="Number of epochs.")
-parser.add_argument("--learningrate", "-lr", type=float, help="Value of learning rate.")
-parser.add_argument("--batch", "-b", type=int, help="Numbers of batch.", default=10)
+parser.add_argument("--learningrate",
+                    "-lr",
+                    type=float,
+                    help="Value of learning rate.")
+parser.add_argument("--batch",
+                    "-b",
+                    type=int,
+                    help="Numbers of batch.",
+                    default=10)
 parser.add_argument("--datasets", "-d", type=str, help="Path for h5py files.")
-parser.add_argument("--traintest", "-tt", type=str, help="Name of the train test validation hdf5 file.")
+parser.add_argument("--traintest",
+                    "-tt",
+                    type=str,
+                    help="Name of the train test validation hdf5 file.")
 parser.add_argument(
     "--optimizer",
     "-o",
@@ -54,18 +62,33 @@ file_name = args.traintest
 opt = args.optimizer
 patience = args.patience
 
+if epochs <= 0:
+    print("Error! The number of epochs must be greater than 0")
+    print("Please, run main.py -h to see the options")
+    sys.exit(-1)
+elif batch_size <= 0:
+    print("Error! Batch size must be greater than 0")
+    print("Please, run main.py -h to see the options")
+    sys.exit(-1)
+elif opt != 0 or opt != 1 or opt != 2:
+    print("Error! The optimizer must be 0, 1 or 2")
+    print("Please, run main.py -h to see the options")
+    sys.exit(-1)
+elif patience <= 0:
+    print("Error! Patience must be greater than 0")
+    print("Please, run main.py -h to see the options")
+    sys.exit(-1)
 
 #  Prepare train-test data section
 
+ptt = PrepareTrainTest(path_datasets, file_name)
+
 if os.path.isdir(path_datasets):
-    # PrepareTrainTest.createTrainTestH5PY(path_datasets, file_name, malignant_equalized, benign_equalized)
-    X_train, X_test, X_val, y_train, y_test, y_val = PrepareTrainTest.readDataH5PY(
-        path_datasets, file_name
-    )
+    # PrepareTrainTest.createTrainTestH5PY(malignant_equalized, benign_equalized)
+    X_train, X_test, X_val, y_train, y_test, y_val = ptt.readDataH5PY()
 else:
     print("Error! H5PY file does not exists...")
     sys.exit(-1)
-
 
 rn = ResNet(lr, opt, batch_size, epochs)
 # Start the section where the model is built
@@ -95,9 +118,7 @@ callbacks = [
     ),
 ]
 
-history = rn.trainModel(
-    model, X_train, y_train, X_val, y_val, callbacks
-)
+history = rn.trainModel(model, X_train, y_train, X_val, y_val, callbacks)
 
 print("-" * 40)
 print("Summary:")
@@ -110,6 +131,7 @@ print("-" * 40)
 
 rn.evaluateModel(model, X_test, y_test)
 
-AuxFunctions.create_confusion_matrix(model, X_test, y_test)
-AuxFunctions.create_plots_train_test(history)
-AuxFunctions.saveWeights(model, "logs/")
+ax = AuxFunctions(model, history, "results/", type_opt, batch_size)
+ax.create_confusion_matrix(X_test, y_test)
+ax.create_plots_train_test()
+ax.saveWeights()

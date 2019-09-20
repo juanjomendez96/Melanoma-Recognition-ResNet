@@ -25,12 +25,12 @@ from keras import losses
 from keras import layers
 
 from AuxFunctions import AuxFunctions
-
 """
     Name: ResNet
     
     Description: This class has been created in order to create, train and evaluate the model of the ResNet.
 """
+
 
 class ResNet:
     def __init__(self, lr, opt, batch_size, epochs):
@@ -38,7 +38,7 @@ class ResNet:
         self.opt = opt
         self.batch_size = batch_size
         self.epochs = epochs
-        
+
     """
         Name: trainModel
 
@@ -55,15 +55,14 @@ class ResNet:
 
         Description: This function train the already compiled model and return the results of the training.
     """
-
     def trainModel(
-        self,
-        model,
-        X_train,
-        y_train,
-        X_val,
-        y_val,
-        callbacks,
+            self,
+            model,
+            X_train,
+            y_train,
+            X_val,
+            y_val,
+            callbacks,
     ):
         history = model.fit(
             X_train,
@@ -86,7 +85,6 @@ class ResNet:
 
         Description: This function has been created in order to evaluate the already trained model.
     """
-
     def evaluateModel(self, model, X_test, y_test):
         print("-" * 40)
         print("Evaluating model...")
@@ -111,7 +109,6 @@ class ResNet:
 
         Description: This function has been created in order to create an identity block that creates a shortcut that skips one or more layers.
     """
-
     def identityBlock(self, X, f, filters, block):
         # Retrieve filters
         F1, F2, F3 = filters
@@ -120,17 +117,26 @@ class ResNet:
         shortcutX = X
 
         # First component of the main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
+        X = Conv2D(filters=F1,
+                   kernel_size=(1, 1),
+                   strides=(1, 1),
+                   padding="valid")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
         # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
+        X = Conv2D(filters=F2,
+                   kernel_size=(f, f),
+                   strides=(1, 1),
+                   padding="same")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
         # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
+        X = Conv2D(filters=F3,
+                   kernel_size=(1, 1),
+                   strides=(1, 1),
+                   padding="valid")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
@@ -138,7 +144,7 @@ class ResNet:
         x = Activation("relu")(X)
 
         return X
-    
+
     """
         Name: convolutionalBlock
 
@@ -152,7 +158,6 @@ class ResNet:
 
         Description: This function has has been created in order to combine the main path of the model with the shortcuts.
     """
-
     def convolutionalBlock(self, X, f, filters, block, s=2):
         F1, F2, F3 = filters
 
@@ -165,7 +170,10 @@ class ResNet:
         X = Activation("relu")(X)
 
         # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
+        X = Conv2D(filters=F2,
+                   kernel_size=(f, f),
+                   strides=(1, 1),
+                   padding="same")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
@@ -193,7 +201,6 @@ class ResNet:
 
         Description: This function has been created in order to build the residual network model. It returns the model to use it in other functions.
     """
-
     def buildModel(self):
         print("-" * 40)
         print("Creating model...")
@@ -210,15 +217,19 @@ class ResNet:
         X = Activation("relu")(X)
         X = MaxPooling2D((3, 3), strides=(2, 2))(X)
 
-        X = self.convolutionalBlock(
-            X, f=3, filters=[64, 64, 256], block="a", s=1
-        )
+        X = self.convolutionalBlock(X,
+                                    f=3,
+                                    filters=[64, 64, 256],
+                                    block="a",
+                                    s=1)
         X = self.identityBlock(X, 3, [64, 64, 256], block="b")
         X = self.identityBlock(X, 3, [64, 64, 256], block="c")
 
-        X = self.convolutionalBlock(
-            X, f=3, filters=[128, 128, 512], block="a", s=1
-        )
+        X = self.convolutionalBlock(X,
+                                    f=3,
+                                    filters=[128, 128, 512],
+                                    block="a",
+                                    s=1)
         X = self.identityBlock(X, 3, [128, 128, 512], block="b")
         X = self.identityBlock(X, 3, [128, 128, 512], block="c")
         X = self.identityBlock(X, 3, [128, 128, 512], block="d")
@@ -249,17 +260,22 @@ class ResNet:
             )
         elif self.opt == 1:
             model.compile(
-                optimizer=optimizers.RMSprop(lr=self.lr, rho=0.9, epsilon=None, decay=0.0),
+                optimizer=optimizers.RMSprop(lr=self.lr,
+                                             rho=0.9,
+                                             epsilon=None,
+                                             decay=0.0),
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
             )
         elif self.opt == 2:
             model.compile(
-                optimizer=optimizers.SGD(lr=self.lr, momentum=0.0, decay=0.0, nesterov=True),
+                optimizer=optimizers.SGD(lr=self.lr,
+                                         momentum=0.0,
+                                         decay=0.0,
+                                         nesterov=True),
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
             )
 
         model.summary()
         return model
-
