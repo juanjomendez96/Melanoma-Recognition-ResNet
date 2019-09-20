@@ -131,6 +131,10 @@ print("-" * 40)
 
 rn.evaluateModel(model, X_test, y_test)
 
+if os.path.isdir("results/"):
+    print("Creating results directory...")
+    os.mkdir("./results/")
+
 ax = AuxFunctions(model, history, "results/", type_opt, batch_size)
 ax.create_confusion_matrix(X_test, y_test)
 ax.create_plots_train_test()

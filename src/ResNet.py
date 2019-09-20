@@ -24,7 +24,6 @@ from keras import optimizers
 from keras import losses
 from keras import layers
 
-from AuxFunctions import AuxFunctions
 """
     Name: ResNet
     
