@@ -7,7 +7,7 @@
 import os
 
 # This is to select the graphic card to use
-os.environ["CUDA_VISIBLE_DEVICES"] = str(0)
+os.environ["CUDA_VISIBLE_DEVICES"] = str(1)
 
 # Python libraries
 import matplotlib.pyplot as plt
@@ -67,9 +67,9 @@ else:
     sys.exit(-1)
 
 
-
+ResNet(lr, opt, batch_size, epochs)
 # Start the section where the model is built
-model = ResNet.buildModel(lr, opt)
+model = ResNet.buildModel()
 
 if opt == 0:
     type_opt = "Adam"

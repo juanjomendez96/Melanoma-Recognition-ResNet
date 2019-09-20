@@ -194,7 +194,7 @@ class ResNet:
         Description: This function has been created in order to build the residual network model. It returns the model to use it in other functions.
     """
 
-    def buildModel(self, lr, opt):
+    def buildModel(self):
         print("-" * 40)
         print("Creating model...")
         print("-" * 40)
