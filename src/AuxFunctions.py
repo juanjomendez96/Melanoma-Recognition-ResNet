@@ -13,8 +13,6 @@ import matplotlib.pyplot as plt
 import keras
 
 from sklearn.metrics import confusion_matrix
-from keras.layers import Activation, Flatten, Conv2D, BatchNormalization
-from keras import layers
 
 """
     Name: AuxFunction
@@ -23,89 +21,6 @@ from keras import layers
 """
 
 class AuxFunctions:
-    """
-        Name: identityBlock
-
-        Inputs: - X: Layers of the model.
-                - f: Size of the convolutional layer's kernel.
-                - filters: Array with the filter's size of the convolotional layers.
-                - block: String that represents the name of the block.
-
-        Returns: - X: Layer of the model.
-
-        Description: This function has been created in order to create an identity block that creates a shortcut that skips one or more layers.
-    """
-
-    def identityBlock(X, f, filters, block):
-        # Retrieve filters
-        F1, F2, F3 = filters
-
-        # Create the shortcut
-        shortcutX = X
-
-        # First component of the main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        X = layers.Add()([X, shortcutX])
-        x = Activation("relu")(X)
-
-        return X
-
-    """
-        Name: convolutionalBlock
-
-        Inputs: - X: Layers of the model.
-                - f: Size of the convolutional layer's kernel.
-                - filters: Array with the filter's size of the convolotional layers.
-                - block: String that represents the name of the block.
-                - stride: Stride of the layer that combines the main path with the shortcuts.
-
-        Returns: - X: Layer of the model.
-
-        Description: This function has has been created in order to combine the main path of the model with the shortcuts.
-    """
-
-    def convolutionalBlock(X, f, filters, block, s=2):
-        F1, F2, F3 = filters
-
-        # Create the shortcut
-        shortcutX = X
-
-        # Main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1))(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1))(X)
-        X = BatchNormalization(axis=3)(X)
-
-        # ShortCut path
-        shortcutX = Conv2D(F3, (1, 1), strides=(s, s))(shortcutX)
-        shortcutX = BatchNormalization(axis=3)(shortcutX)
-
-        # Add shortcut value to the main path and pass it through a RELU activation
-        X = layers.Add()([X, shortcutX])
-        X = Activation("relu")(X)
-
-        return X
 
     """
         Name: create_confusion_matrix

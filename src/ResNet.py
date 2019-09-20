@@ -22,6 +22,7 @@ from keras.layers import (
 from keras import Model
 from keras import optimizers
 from keras import losses
+from keras import layers
 
 from AuxFunctions import AuxFunctions
 
@@ -32,6 +33,12 @@ from AuxFunctions import AuxFunctions
 """
 
 class ResNet:
+    def __init__(self, lr, opt, batch_size, epochs):
+        self.lr = lr
+        self.opt = opt
+        self.batch_size = batch_size
+        self.epochs = epochs
+        
     """
         Name: trainModel
 
@@ -50,20 +57,19 @@ class ResNet:
     """
 
     def trainModel(
+        self,
         model,
         X_train,
         y_train,
         X_val,
         y_val,
-        epochs,
-        batch_size,
         callbacks,
     ):
         history = model.fit(
             X_train,
             y_train,
-            batch_size=batch_size,
-            epochs=epochs,
+            batch_size=self.batch_size,
+            epochs=self.epochs,
             validation_data=(X_val, y_val),
             callbacks=callbacks,
         )
@@ -81,7 +87,7 @@ class ResNet:
         Description: This function has been created in order to evaluate the already trained model.
     """
 
-    def evaluateModel(model, X_test, y_test):
+    def evaluateModel(self, model, X_test, y_test):
         print("-" * 40)
         print("Evaluating model...")
         print("-" * 40)
@@ -94,6 +100,90 @@ class ResNet:
         print("-" * 40)
 
     """
+        Name: identityBlock
+
+        Inputs: - X: Layers of the model.
+                - f: Size of the convolutional layer's kernel.
+                - filters: Array with the filter's size of the convolotional layers.
+                - block: String that represents the name of the block.
+
+        Returns: - X: Layer of the model.
+
+        Description: This function has been created in order to create an identity block that creates a shortcut that skips one or more layers.
+    """
+
+    def identityBlock(self, X, f, filters, block):
+        # Retrieve filters
+        F1, F2, F3 = filters
+
+        # Create the shortcut
+        shortcutX = X
+
+        # First component of the main path
+        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
+        X = BatchNormalization(axis=3)(X)
+        X = Activation("relu")(X)
+
+        # Second component of the main path
+        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
+        X = BatchNormalization(axis=3)(X)
+        X = Activation("relu")(X)
+
+        # Third component of the main path
+        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
+        X = BatchNormalization(axis=3)(X)
+        X = Activation("relu")(X)
+
+        X = layers.Add()([X, shortcutX])
+        x = Activation("relu")(X)
+
+        return X
+    
+    """
+        Name: convolutionalBlock
+
+        Inputs: - X: Layers of the model.
+                - f: Size of the convolutional layer's kernel.
+                - filters: Array with the filter's size of the convolotional layers.
+                - block: String that represents the name of the block.
+                - stride: Stride of the layer that combines the main path with the shortcuts.
+
+        Returns: - X: Layer of the model.
+
+        Description: This function has has been created in order to combine the main path of the model with the shortcuts.
+    """
+
+    def convolutionalBlock(self, X, f, filters, block, s=2):
+        F1, F2, F3 = filters
+
+        # Create the shortcut
+        shortcutX = X
+
+        # Main path
+        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1))(X)
+        X = BatchNormalization(axis=3)(X)
+        X = Activation("relu")(X)
+
+        # Second component of the main path
+        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
+        X = BatchNormalization(axis=3)(X)
+        X = Activation("relu")(X)
+
+        # Third component of the main path
+        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1))(X)
+        X = BatchNormalization(axis=3)(X)
+
+        # ShortCut path
+        shortcutX = Conv2D(F3, (1, 1), strides=(s, s))(shortcutX)
+        shortcutX = BatchNormalization(axis=3)(shortcutX)
+
+        # Add shortcut value to the main path and pass it through a RELU activation
+        X = layers.Add()([X, shortcutX])
+        X = Activation("relu")(X)
+
+        return X
+
+    """
         Name: buildModel
 
         Inputs: - lr: Learning rate value in order to build the model.
@@ -104,7 +194,7 @@ class ResNet:
         Description: This function has been created in order to build the residual network model. It returns the model to use it in other functions.
     """
 
-    def buildModel(lr, opt):
+    def buildModel(self, lr, opt):
         print("-" * 40)
         print("Creating model...")
         print("-" * 40)
@@ -120,18 +210,18 @@ class ResNet:
         X = Activation("relu")(X)
         X = MaxPooling2D((3, 3), strides=(2, 2))(X)
 
-        X = AuxFunctions.convolutionalBlock(
+        X = self.convolutionalBlock(
             X, f=3, filters=[64, 64, 256], block="a", s=1
         )
-        X = AuxFunctions.identityBlock(X, 3, [64, 64, 256], block="b")
-        X = AuxFunctions.identityBlock(X, 3, [64, 64, 256], block="c")
+        X = self.identityBlock(X, 3, [64, 64, 256], block="b")
+        X = self.identityBlock(X, 3, [64, 64, 256], block="c")
 
-        X = AuxFunctions.convolutionalBlock(
+        X = self.convolutionalBlock(
             X, f=3, filters=[128, 128, 512], block="a", s=1
         )
-        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="b")
-        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="c")
-        X = AuxFunctions.identityBlock(X, 3, [128, 128, 512], block="d")
+        X = self.identityBlock(X, 3, [128, 128, 512], block="b")
+        X = self.identityBlock(X, 3, [128, 128, 512], block="c")
+        X = self.identityBlock(X, 3, [128, 128, 512], block="d")
 
         X = AveragePooling2D((2, 2))(X)
 
@@ -144,10 +234,10 @@ class ResNet:
         X = Dense(classes, activation="softmax")(X)
 
         model = Model(inputs=X_input, outputs=X)
-        if opt == 0:
+        if self.opt == 0:
             model.compile(
                 optimizer=optimizers.Adam(
-                    lr=lr,
+                    lr=self.lr,
                     beta_1=0.9,
                     beta_2=0.999,
                     epsilon=None,
@@ -157,15 +247,15 @@ class ResNet:
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
             )
-        elif opt == 1:
+        elif self.opt == 1:
             model.compile(
-                optimizer=optimizers.RMSprop(lr=lr, rho=0.9, epsilon=None, decay=0.0),
+                optimizer=optimizers.RMSprop(lr=self.lr, rho=0.9, epsilon=None, decay=0.0),
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
             )
-        elif opt == 2:
+        elif self.opt == 2:
             model.compile(
-                optimizer=optimizers.SGD(lr=lr, momentum=0.0, decay=0.0, nesterov=True),
+                optimizer=optimizers.SGD(lr=self.lr, momentum=0.0, decay=0.0, nesterov=True),
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
             )
