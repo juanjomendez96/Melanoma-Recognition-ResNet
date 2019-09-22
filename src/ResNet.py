@@ -205,10 +205,10 @@ class ResNet:
         X = self.identityBlock(X, 3, [32, 32, 128], block="b")
         X = self.identityBlock(X, 3, [32, 32, 128], block="c")
 
-        X = self.convolutionalBlock(X, f=3, filters=[64, 64, 256], block="a", s=1)
-        X = self.identityBlock(X, 3, [64, 64, 256], block="b")
-        X = self.identityBlock(X, 3, [64, 64, 256], block="c")
-        X = self.identityBlock(X, 3, [64, 64, 256], block="d")
+        X = self.convolutionalBlock(X, f=3, filters=[128, 128, 512], block="a", s=1)
+        X = self.identityBlock(X, 3, [128, 128, 512], block="b")
+        X = self.identityBlock(X, 3, [128, 128, 512], block="c")
+        X = self.identityBlock(X, 3, [128, 128, 512], block="d")
 
         X = AveragePooling2D((2, 2))(X)
 
