@@ -164,24 +164,23 @@ class ResNet:
         shortcutX = X
 
         # Main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1))(X)
+        X = Conv2D(filters=F1, kernel_size=(3, 3), padding="same")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
         # Second component of the main path
         X = Conv2D(filters=F2,
                    kernel_size=(f, f),
-                   strides=(1, 1),
                    padding="same")(X)
         X = BatchNormalization(axis=3)(X)
         X = Activation("relu")(X)
 
         # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1))(X)
+        X = Conv2D(filters=F3, kernel_size=(3, 3), padding="same")(X)
         X = BatchNormalization(axis=3)(X)
 
         # ShortCut path
-        shortcutX = Conv2D(F3, (1, 1), strides=(s, s))(shortcutX)
+        shortcutX = Conv2D(F3, (3, 3), padding="same")(shortcutX)
         shortcutX = BatchNormalization(axis=3)(shortcutX)
 
         # Add shortcut value to the main path and pass it through a RELU activation
@@ -211,27 +210,28 @@ class ResNet:
 
         X = ZeroPadding2D((3, 3))(X_input)
 
-        X = Conv2D(32, (7, 7), strides=(2, 2))(X)
-        X = BatchNormalization(axis=3)(X)
+        X = Conv2D(32, (3, 3), padding="same")(X)
         X = Activation("relu")(X)
-        X = MaxPooling2D((3, 3), strides=(2, 2))(X)
+        X = BatchNormalization()(X)
+        X = MaxPooling2D((2, 2))(X)
+        
 
         X = self.convolutionalBlock(X,
                                     f=3,
-                                    filters=[64, 64, 256],
+                                    filters=[32, 64, 128],
                                     block="a",
                                     s=1)
-        X = self.identityBlock(X, 3, [64, 64, 256], block="b")
-        X = self.identityBlock(X, 3, [64, 64, 256], block="c")
+        X = self.identityBlock(X, 3, [32, 64, 128], block="b")
+        X = self.identityBlock(X, 3, [32, 64, 128], block="c")
 
         X = self.convolutionalBlock(X,
                                     f=3,
                                     filters=[128, 128, 512],
                                     block="a",
                                     s=1)
-        X = self.identityBlock(X, 3, [128, 128, 512], block="b")
-        X = self.identityBlock(X, 3, [128, 128, 512], block="c")
-        X = self.identityBlock(X, 3, [128, 128, 512], block="d")
+        X = self.identityBlock(X, 3, [128, 128, 256], block="b")
+        X = self.identityBlock(X, 3, [128, 128, 256], block="c")
+        X = self.identityBlock(X, 3, [128, 128, 256], block="d")
 
         X = AveragePooling2D((2, 2))(X)
 
@@ -247,12 +247,7 @@ class ResNet:
         if self.opt == 0:
             model.compile(
                 optimizer=optimizers.Adam(
-                    lr=self.lr,
-                    beta_1=0.9,
-                    beta_2=0.999,
-                    epsilon=None,
-                    decay=0.0,
-                    amsgrad=False,
+                    lr=self.lr
                 ),
                 loss=losses.binary_crossentropy,
                 metrics=["accuracy"],
@@ -278,3 +273,4 @@ class ResNet:
 
         model.summary()
         return model
+
