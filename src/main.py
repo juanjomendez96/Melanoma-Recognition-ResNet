@@ -104,7 +104,7 @@ elif opt == 2:
 # Creation of the model's callbacks Tensorboard to create the graphs with the results and EarlyStopping to stop the training when it is not improving
 callbacks = [
     TensorBoard(
-        log_dir="./logs/" + type_opt + "_b" + str(batch_size) + "/",
+        log_dir="./logs/" + type_opt + "_b" + str(batch_size) + "_" + str(lr) + "/",
         write_images=True,
         write_graph=True,
         update_freq="epoch",
