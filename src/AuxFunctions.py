@@ -4,18 +4,12 @@
     File: AuxFunctions.py
     Program: File that contains the additional functions to make the network works
 """
-
-import tensorflow as ts
 import numpy as np
 import seaborn as sns
-import numpy as np
 import matplotlib.pyplot as plt
 import keras
 
 from sklearn.metrics import confusion_matrix
-from keras.layers import Activation, Flatten, Conv2D, BatchNormalization
-from keras import layers
-
 """
     Name: AuxFunction
     
@@ -23,89 +17,12 @@ from keras import layers
 """
 
 class AuxFunctions:
-    """
-        Name: identityBlock
-
-        Inputs: - X: Layers of the model.
-                - f: Size of the convolutional layer's kernel.
-                - filters: Array with the filter's size of the convolotional layers.
-                - block: String that represents the name of the block.
-
-        Returns: - X: Layer of the model.
-
-        Description: This function has been created in order to create an identity block that creates a shortcut that skips one or more layers.
-    """
-
-    def identityBlock(X, f, filters, block):
-        # Retrieve filters
-        F1, F2, F3 = filters
-
-        # Create the shortcut
-        shortcutX = X
-
-        # First component of the main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1), padding="valid")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        X = layers.Add()([X, shortcutX])
-        x = Activation("relu")(X)
-
-        return X
-
-    """
-        Name: convolutionalBlock
-
-        Inputs: - X: Layers of the model.
-                - f: Size of the convolutional layer's kernel.
-                - filters: Array with the filter's size of the convolotional layers.
-                - block: String that represents the name of the block.
-                - stride: Stride of the layer that combines the main path with the shortcuts.
-
-        Returns: - X: Layer of the model.
-
-        Description: This function has has been created in order to combine the main path of the model with the shortcuts.
-    """
-
-    def convolutionalBlock(X, f, filters, block, s=2):
-        F1, F2, F3 = filters
-
-        # Create the shortcut
-        shortcutX = X
-
-        # Main path
-        X = Conv2D(filters=F1, kernel_size=(1, 1), strides=(1, 1))(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Second component of the main path
-        X = Conv2D(filters=F2, kernel_size=(f, f), strides=(1, 1), padding="same")(X)
-        X = BatchNormalization(axis=3)(X)
-        X = Activation("relu")(X)
-
-        # Third component of the main path
-        X = Conv2D(filters=F3, kernel_size=(1, 1), strides=(1, 1))(X)
-        X = BatchNormalization(axis=3)(X)
-
-        # ShortCut path
-        shortcutX = Conv2D(F3, (1, 1), strides=(s, s))(shortcutX)
-        shortcutX = BatchNormalization(axis=3)(shortcutX)
-
-        # Add shortcut value to the main path and pass it through a RELU activation
-        X = layers.Add()([X, shortcutX])
-        X = Activation("relu")(X)
-
-        return X
+    def __init__(self, model, history, main_path, opt, batch_size):
+        self.model = model
+        self.history = history
+        self.main_path = main_path
+        self.opt = opt
+        self.batch_size = batch_size
 
     """
         Name: create_confusion_matrix
@@ -118,14 +35,13 @@ class AuxFunctions:
 
         Description: This function has been created in order to show the confusion matrix of the model. Here we have used an additional library in order to get a confusion matrix image.
     """
-
-    def create_confusion_matrix(model, X_test, y_test):
+    def create_confusion_matrix(self, X_test, y_test):
         print("-" * 40)
         print("Creating confusion matrix...")
         print("-" * 40)
         y_test_confusion_matrix = np.argmax(y_test, axis=1)
 
-        prediction = model.predict(X_test)
+        prediction = self.model.predict(X_test)
         y_pred = np.argmax(prediction, axis=1)
 
         matrix = confusion_matrix(y_test_confusion_matrix, y_pred)
@@ -139,7 +55,7 @@ class AuxFunctions:
         ax.xaxis.set_ticklabels(["malignant", "benign"])
         ax.yaxis.set_ticklabels(["malignant", "benign"])
 
-        plt.savefig("confusion_matrix.png")
+        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + "confusion_matrix.png")
 
     """
         Name: create_plots_train_test
@@ -150,18 +66,17 @@ class AuxFunctions:
 
         Description: This function creates a graphics with the train and validation losses. It creates an image with that values.
     """
-
-    def create_plots_train_test(history):
+    def create_plots_train_test(self):
         print("-" * 40)
         print("Creating train test plot...")
         print("-" * 40)
         plt.clf()
-        plt.plot(history.history["loss"])
-        plt.plot(history.history["val_loss"], label="test")
+        plt.plot(self.history.history["loss"])
+        plt.plot(self.history.history["val_loss"], label="test")
         plt.xlabel("Train epochs")
         plt.ylabel("Error")
         plt.legend(["train", "validation"], loc="lower left")
-        plt.savefig("train-validation.png")
+        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + "train-validation.png")
 
     """
         Name: saveWeights
@@ -173,10 +88,8 @@ class AuxFunctions:
 
         Description: The aim of this function is to save the weights of the model after the training has been completed. 
     """
-
-    def saveWeights(model, path):
+    def saveWeights(self):
         print("-" * 40)
         print("Saving weights...")
         print("-" * 40)
-        model.save_weights(path + "best_weights.hdf5")
-
+        self.model.save_weights(self.main_path + self.opt + "_" + str(self.batch_size) + "best_weights.hdf5")
