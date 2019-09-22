@@ -135,7 +135,7 @@ if os.path.exists("./results/") == False:
     print("Creating results directory...")
     os.mkdir("./results/")
 
-ax = AuxFunctions(model, history, "results/", type_opt, batch_size)
+ax = AuxFunctions(model, history, "results/", type_opt, batch_size, lr)
 ax.create_confusion_matrix(X_test, y_test)
 ax.create_plots_train_test()
 ax.saveWeights()

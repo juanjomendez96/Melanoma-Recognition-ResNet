@@ -17,12 +17,13 @@ from sklearn.metrics import confusion_matrix
 """
 
 class AuxFunctions:
-    def __init__(self, model, history, main_path, opt, batch_size):
+    def __init__(self, model, history, main_path, opt, batch_size, lr):
         self.model = model
         self.history = history
         self.main_path = main_path
         self.opt = opt
         self.batch_size = batch_size
+        self.lr = lr
 
     """
         Name: create_confusion_matrix
@@ -55,7 +56,7 @@ class AuxFunctions:
         ax.xaxis.set_ticklabels(["malignant", "benign"])
         ax.yaxis.set_ticklabels(["malignant", "benign"])
 
-        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + "confusion_matrix.png")
+        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + str(self.lr) + "confusion_matrix.png")
 
     """
         Name: create_plots_train_test
@@ -76,7 +77,7 @@ class AuxFunctions:
         plt.xlabel("Train epochs")
         plt.ylabel("Error")
         plt.legend(["train", "validation"], loc="lower left")
-        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + "train-validation.png")
+        plt.savefig(self.main_path + self.opt + "_" + str(self.batch_size) + str(self.lr) + "train-validation.png")
 
     """
         Name: saveWeights
@@ -92,4 +93,4 @@ class AuxFunctions:
         print("-" * 40)
         print("Saving weights...")
         print("-" * 40)
-        self.model.save_weights(self.main_path + self.opt + "_" + str(self.batch_size) + "best_weights.hdf5")
+        self.model.save_weights(self.main_path + self.opt + "_" + str(self.batch_size) + str(self.lr) +  "best_weights.hdf5")
